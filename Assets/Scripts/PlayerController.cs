@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -7,6 +8,8 @@ public class PlayerController : MonoBehaviour
 
     Rigidbody2D playerRB;
     Animator playerAnim;
+
+    private bool isAttacking = false;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -22,9 +25,14 @@ public class PlayerController : MonoBehaviour
 
         playerRB.linearVelocity = new Vector2(horizontalInput, verticalInput) * 5f;
 
-        UpdateAnimations();
+        
         ChangeDirection();
 
+    }
+
+    void Update()
+    {
+        UpdateAnimations();
     }
 
     void UpdateAnimations()
@@ -37,15 +45,28 @@ public class PlayerController : MonoBehaviour
         {
             playerAnim.SetBool("isRunning", false);
         }
+        if (Input.GetMouseButtonDown(0) && !isAttacking)
+        {
+            StartCoroutine(Attack());
+        }
+
+    }
+    IEnumerator Attack()
+    {
+        isAttacking = true;
+        playerAnim.SetTrigger("Attack");
+        yield return new WaitForSeconds(1f);
+        isAttacking = false;
+
     }
 
     void ChangeDirection()
     {
-        if(horizontalInput < 0)
+        if (horizontalInput < 0)
         {
             transform.localScale = new Vector3(-1, transform.localScale.y, transform.localScale.z);
         }
-        else if(horizontalInput > 0)
+        else if (horizontalInput > 0)
         {
             transform.localScale = new Vector3(1, transform.localScale.y, transform.localScale.z);
         }
